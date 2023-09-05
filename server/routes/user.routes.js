@@ -9,8 +9,13 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.use(cors());
 //get all
 router.get("/", async (req, res) => {
-  const query = "SELECT * FROM user";
+  let query = "SELECT * FROM user";
+  const { sort, order } = req.query;
+
   try {
+    if (sort && order) {
+      query += ` ORDER BY ${order} ${sort}`;
+    }
     const users = await db.execute(query);
     res.json({ users: users[0] });
   } catch (error) {
@@ -37,7 +42,6 @@ router.get("/:id", async (req, res) => {
 //post
 router.post("/", async (req, res) => {
   const { name, description } = req.body;
-  console.log(req.body);
   try {
     const query = `INSERT INTO user (name, description) VALUES ('${name}', '${description}')`;
     const result = await db.execute(query);
@@ -79,19 +83,6 @@ router.delete("/:id", async (req, res) => {
     } else {
       res.json({ error: "delete user failed" });
     }
-  } catch (error) {
-    res.json({ error: error });
-  }
-});
-
-//sort
-router.get("/sort/:style", async (req, res) => {
-  try {
-    const { style } = req.params;
-    console.log(style);
-    const query = `SELECT * FROM user ORDER BY id ${style}`;
-    const users = await db.execute(query);
-    res.json({ users: users[0] });
   } catch (error) {
     res.json({ error: error });
   }

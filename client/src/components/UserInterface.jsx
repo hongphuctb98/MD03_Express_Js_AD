@@ -68,12 +68,11 @@ function UserInterface() {
     loadData();
   };
 
-  const handleSort = async () => {
+  const handleSort = async (order) => {
     setSortStyle(!sortStyle);
-
     const style = sortStyle ? "ASC" : "DESC";
     await axios
-      .get(`http://localhost:6001/api/v1/users/sort/${style}`)
+      .get(`http://localhost:6001/api/v1/users?order=${order}&&sort=${style}`)
       .then((res) => setSortUsers(res.data.users))
       .catch((err) => console.log(err));
   };
@@ -94,14 +93,21 @@ function UserInterface() {
           <thead>
             <tr>
               <th scope="col">
-                id{" "}
+                id
                 <i
                   className="fa-solid fa-arrows-up-down"
                   style={{ cursor: "pointer", marginLeft: "15px" }}
-                  onClick={() => handleSort()}
+                  onClick={() => handleSort("id")}
                 ></i>
               </th>
-              <th scope="col">Name</th>
+              <th scope="col">
+                Name
+                <i
+                  className="fa-solid fa-arrows-up-down"
+                  style={{ cursor: "pointer", marginLeft: "15px" }}
+                  onClick={() => handleSort("name")}
+                ></i>
+              </th>
               <th scope="col">Description</th>
               <th scope="col" style={{ width: "200px" }}>
                 Action
@@ -114,20 +120,22 @@ function UserInterface() {
                 <th scope="row">{user.id}</th>
                 <td>{user.name}</td>
                 <td>{user.description}</td>
-                <td>
+                <td className="d-flex justify-content-around">
                   <button
-                    className="btn btn-warning"
+                    className="btn btn-info"
                     data-bs-toggle="modal"
                     data-bs-target="#exampleModal"
                     onClick={() => handleEdit(user.id)}
+                    style={{ minWidth: "70px" }}
                   >
-                    edit
+                    Edit
                   </button>
                   <button
                     className="btn btn-danger"
                     onClick={() => handleDel(user.id)}
+                    style={{ minWidth: "70px" }}
                   >
-                    delete
+                    Delete
                   </button>
                 </td>
               </tr>
